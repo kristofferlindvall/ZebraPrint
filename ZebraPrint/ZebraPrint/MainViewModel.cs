@@ -73,5 +73,22 @@ namespace ZebraPrint
                 }
             }
         }
+
+        private string _tcpHost;
+        public string TcpHost
+        {
+            get
+            {
+                return _tcpHost;
+            }
+            set
+            {
+                if (_tcpHost != value)
+                {
+                    _tcpHost = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
     }
 }

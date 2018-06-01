@@ -59,32 +59,35 @@ namespace ZebraPrint
                 // Handle communications error here.
                 Debug.WriteLine(ex.StackTrace);
             }
+        }
 
-            //try
-            //{
+        private void SendTcp(object sender, EventArgs e)
+        {
+            // Network connections are not allowed on main UI thread.
+            Task.Run(() =>
+            {
+                try
+                {
+                    // Instantiate a Bluetooth connection
+                    var conn = ConnectionBuilder.Current.Build("TCP:" + ViewModel.TcpHost + ":9100");
 
-            //    // Instantiate TCP connection
-            //    Connection thePrinterConn = ConnectionBuilder.build("BT:" + theIpAddress + ":9100");
+                    // Open the connection - physical connection is established here.
+                    conn.Open();
 
-            //    // Open the connection - physical connection is established here.
-            //    thePrinterConn.open();
+                    //Set printer to ZPL mode
+                    WriteString(conn, "! U1 setvar \"device.languages\" \"zpl\"\r\n");
 
-            //    // This example prints "This is a ZPL test." near the top of the label.
-            //    String zplData = "^XA^FO20,20^A0N,25,25^FDThis is a ZPL test.^FS^XZ";
+                    WriteString(conn, "^XA^FO20,20^A0N,25,25^FDHello World!^FS^XZ");
 
-            //    // Send the data to printer as a byte array.
-            //    thePrinterConn.write(zplData.getBytes());
-
-            //    // Close the connection to release resources.
-            //    thePrinterConn.close();
-
-            //}
-            //catch (ConnectionException e)
-            //{
-
-            //    // Handle communications error here.
-            //    e.printStackTrace();
-            //}
+                    // Close the connection to release resources.
+                    conn.Close();
+                }
+                catch (Zebra.Sdk.Comm.ConnectionException ex)
+                {
+                    // Handle communications error here.
+                    Debug.WriteLine(ex.StackTrace);
+                }
+            });
         }
 
         private void WriteString(IConnection connection, string data)

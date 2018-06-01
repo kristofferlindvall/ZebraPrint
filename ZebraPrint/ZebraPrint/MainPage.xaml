@@ -7,13 +7,18 @@
         <local:MainViewModel />
     </ContentPage.BindingContext>
     <ContentPage.Content>
-        <StackLayout>
+        <StackLayout Margin="10">
+            <Label Text="Bluetooth" FontSize="Medium"/>
             <Picker x:Name="BluetoothDevices"
                     Title="Select bluetooth printer"
                     ItemsSource="{Binding BluetoothPrinters}"
                     ItemDisplayBinding="{Binding FriendlyName}"
                     SelectedItem="{Binding SelectedBluetoothPrinter, Mode=TwoWay}"/>
             <Button Text="Print Bluetooth" Clicked="SendBluetooth"/>
+            <Label Text="TCP" Margin="0,10,0,0" FontSize="Medium"/>
+            <Label Text="IP/Hostname"/>
+            <Entry x:Name="TcpHost" Text="{Binding TcpHost, Mode=TwoWay}"/>
+            <Button Text="Print TCP" Clicked="SendTcp"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
