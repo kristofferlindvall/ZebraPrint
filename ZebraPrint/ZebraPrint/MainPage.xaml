@@ -12,7 +12,7 @@
             <Picker x:Name="BluetoothDevices"
                     Title="Select bluetooth printer"
                     ItemsSource="{Binding BluetoothPrinters}"
-                    ItemDisplayBinding="{Binding FriendlyName}"
+                    ItemDisplayBinding="{Binding Name}"
                     SelectedItem="{Binding SelectedBluetoothPrinter, Mode=TwoWay}"/>
             <Button Text="Print Bluetooth" Clicked="SendBluetooth"/>
             <Label Text="TCP" Margin="0,10,0,0" FontSize="Medium"/>

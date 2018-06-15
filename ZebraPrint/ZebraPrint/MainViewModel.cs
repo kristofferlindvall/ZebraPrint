@@ -1,8 +1,10 @@
-﻿using LinkOS.Plugin.Abstractions;
+﻿using Android.Bluetooth;
+using Android.OS;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -11,23 +13,27 @@ using Xamarin.Forms;
 
 namespace ZebraPrint
 {
-    public class MainViewModel : INotifyPropertyChanged, IDiscoveryHandler
+    public class MainViewModel : INotifyPropertyChanged
     {
+        private const string BT_SERIAL = "00001101-0000-1000-8000-00805f9b34fb";
+        private readonly BluetoothAdapter _adapter;
+
         public MainViewModel()
         {
-            Task.Run(() =>
-            {
-                LinkOS.Plugin.BluetoothDiscoverer.Current.FindPrinters(Forms.Context, this);
-            });
+            _adapter = BluetoothAdapter.DefaultAdapter;
+
+            if (_adapter == null)
+                throw new Exception("No Bluetooth adapter found.");
+
+            if (!_adapter.IsEnabled)
+                throw new Exception("Bluetooth adapter is not enabled.");
         }
-
-        private List<IDiscoveredPrinterBluetooth> _bluetoothPrinters = new List<IDiscoveredPrinterBluetooth>();
-
-        public List<IDiscoveredPrinterBluetooth> BluetoothPrinters
+        
+        public List<BluetoothDevice> BluetoothPrinters
         {
             get
             {
-                return _bluetoothPrinters.ToList();
+                return _adapter.BondedDevices.Where(r => r.BluetoothClass.DeviceClass == (DeviceClass)1664).ToList();
             }
         }
 
@@ -37,28 +43,8 @@ namespace ZebraPrint
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public void FoundPrinter(IDiscoveredPrinter discoveredPrinter)
-        {
-            if (discoveredPrinter is IDiscoveredPrinterBluetooth bt)
-            {
-                _bluetoothPrinters.Add(bt);
-                OnPropertyChanged(nameof(BluetoothPrinters));
-                Debug.WriteLine("Bluetooth device found");
-            }
-        }
-
-        public void DiscoveryFinished()
-        {
-            Debug.WriteLine("Bluetooth device discovery finished");
-        }
-
-        public void DiscoveryError(string message)
-        {
-            Debug.WriteLine(message);
-        }
-
-        private IDiscoveredPrinterBluetooth _selectedBluetoothPrinter;
-        public IDiscoveredPrinterBluetooth SelectedBluetoothPrinter
+        private BluetoothDevice _selectedBluetoothPrinter;
+        public BluetoothDevice SelectedBluetoothPrinter
         {
             get
             {
@@ -72,6 +58,46 @@ namespace ZebraPrint
                     OnPropertyChanged();
                 }
             }
+        }
+
+        public void PrintBluetooth()
+        {
+            _adapter.CancelDiscovery();
+            
+            using (var socket = SelectedBluetoothPrinter.CreateRfcommSocketToServiceRecord(Java.Util.UUID.FromString(BT_SERIAL)))
+            using (var writer = new StreamWriter(socket.OutputStream))
+            {
+                socket.Connect();
+                writer.WriteLine("! U1 setvar \"device.languages\" \"zpl\"");
+                writer.WriteLine("^XA^FO20,20^A0N,25,25^FDHello World!^FS^XZ");
+            }
+        }
+
+        private BluetoothSocket BtConnect(BluetoothDevice device)
+        {
+            BluetoothSocket socket = null;
+            ParcelUuid[] uuids = null;
+            if (device.FetchUuidsWithSdp())
+            {
+                uuids = device.GetUuids();
+            }
+            if ((uuids != null) && (uuids.Length > 0))
+            {
+                foreach (var uuid in uuids)
+                {
+                    try
+                    {
+                        socket = device.CreateRfcommSocketToServiceRecord(uuid.Uuid);
+                        socket.Connect();
+                        break;
+                    }
+                    catch (System.Exception ex)
+                    {
+                        socket = null;
+                    }
+                }
+            }
+            return socket;
         }
 
         private string _tcpHost;

@@ -56,12 +56,6 @@
     <Reference Include="FormsViewGroup, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Xamarin.Forms.2.4.0.280\lib\MonoAndroid10\FormsViewGroup.dll</HintPath>
     </Reference>
-    <Reference Include="LinkOS.Plugin, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\LinkOS_Xamarin_SDK.1.1.75\lib\MonoAndroid\LinkOS.Plugin.dll</HintPath>
-    </Reference>
-    <Reference Include="LinkOS.Plugin.Abstractions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\LinkOS_Xamarin_SDK.1.1.75\lib\MonoAndroid\LinkOS.Plugin.Abstractions.dll</HintPath>
-    </Reference>
     <Reference Include="Mono.Android" />
     <Reference Include="mscorlib" />
     <Reference Include="System" />
@@ -121,9 +115,6 @@
     </Reference>
     <Reference Include="Xamarin.Forms.Xaml, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Xamarin.Forms.2.4.0.280\lib\MonoAndroid10\Xamarin.Forms.Xaml.dll</HintPath>
-    </Reference>
-    <Reference Include="ZSDK_ANDROIDX, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\LinkOS_Xamarin_SDK.1.1.75\lib\MonoAndroid\ZSDK_ANDROIDX.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
