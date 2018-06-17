@@ -6,6 +6,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -70,6 +72,27 @@ namespace ZebraPrint
                 socket.Connect();
                 writer.WriteLine("! U1 setvar \"device.languages\" \"zpl\"");
                 writer.WriteLine("^XA^FO20,20^A0N,25,25^FDHello World!^FS^XZ");
+            }
+        }
+
+        public void PrintNetwork()
+        {
+            var parts = TcpHost.Split(':');
+            var ip = parts[0];
+            var port = int.Parse(parts[1]);
+
+            using (var socket = new Socket(AddressFamily.InterNetwork,
+                    SocketType.Stream,
+                    ProtocolType.Tcp))
+            {
+                socket.Connect(ip, port);
+
+                using (var stream = new NetworkStream(socket))
+                using (var writer = new StreamWriter(stream))
+                {
+                    writer.WriteLine("! U1 setvar \"device.languages\" \"zpl\"");
+                    writer.WriteLine("^XA^FO20,20^A0N,25,25^FDHello World!^FS^XZ");
+                }
             }
         }
 

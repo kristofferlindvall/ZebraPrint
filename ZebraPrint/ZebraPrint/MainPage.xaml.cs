@@ -21,40 +21,15 @@ namespace ZebraPrint
         
         private MainViewModel ViewModel { get { return BindingContext as MainViewModel; } }
 
-        private void SendTcp(object sender, EventArgs e)
+        private void SendBluetooth(object sender, EventArgs e)
         {
-            //// Network connections are not allowed on main UI thread.
-            //Task.Run(() =>
-            //{
-            //    try
-            //    {
-            //        // Instantiate a Bluetooth connection
-            //        var conn = ConnectionBuilder.Current.Build("TCP:" + ViewModel.TcpHost + ":9100");
-
-            //        // Open the connection - physical connection is established here.
-            //        conn.Open();
-
-            //        //Set printer to ZPL mode
-            //        WriteString(conn, "! U1 setvar \"device.languages\" \"zpl\"\r\n");
-
-            //        WriteString(conn, "^XA^FO20,20^A0N,25,25^FDHello World!^FS^XZ");
-
-            //        // Close the connection to release resources.
-            //        conn.Close();
-            //    }
-            //    catch (Zebra.Sdk.Comm.ConnectionException ex)
-            //    {
-            //        // Handle communications error here.
-            //        Debug.WriteLine(ex.StackTrace);
-            //    }
-            //});
+            ViewModel.PrintBluetooth();
         }
 
-        //private void WriteString(IConnection connection, string data)
-        //{
-        //    var bytes = Encoding.UTF8.GetBytes(data);
-        //    connection.Write(bytes);
-        //}
+        private void SendTcp(object sender, EventArgs e)
+        {
+            ViewModel.PrintNetwork();
+        }
     }
 
 }
